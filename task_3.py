@@ -20,3 +20,8 @@
 
 Задание творческое. Здесь нет жестких требований к выполнению.
 """
+numbers = [(3, 14), (1, 61), (2, 71)]
+
+numbers.sort(key=lambda k: k[1])
+
+print('Sorted list:', numbers)

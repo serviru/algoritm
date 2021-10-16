@@ -1,75 +1,76 @@
 """
 Задание 1.
+Реализуйте кодирование строки "по Хаффману".
+У вас два пути:
+1) тема идет тяжело? тогда вы можете, опираясь на пример с урока, сделать свою!!! версию алгоритма
+Разрешается и приветствуется изменение имен переменных, выбор других коллекций, различные изменения
+и оптимизации.
 
-Для каждой из трех функций выполнить следующее:
-
-1) для каждого выражения вместо !!! укажите сложность этого выражения.
-2) определите сложность каждой функции в целом.
-
-Сложность нужно определять только там, где указаны символы !!!
-
-Примечание:
-Прошу вас внимательно читать ТЗ и не выполнять все пункты.
+2) тема понятна? постарайтесь сделать свою реализацию.
+Вы можете реализовать задачу, например, через ООП или предложить иной подход к решению.
 """
-
-import random
-
-
-#############################################################################################
-def check_1(lst_obj):
-    """Функция должна создать множество из списка.
-
-    Алгоритм 3:
-    Создать множество из списка
-
-    Сложность: !!!.
-    """
-    lst_to_set = set(lst_obj)  # !!!
-    return lst_to_set  # !!!
+import queue
 
 
-#############################################################################################
-def check_2(lst_obj):
-    """Функция должная вернуть True, если все элементы списка различаются.
+class Node:
 
-    Алгоритм 1:
-    Проходимся по списку и для каждого элемента проверяем,
-    что такой элемент отстутствует
-    в оставшихся справа элементах
+    def __init__(self, x, k=-1, l=None, r=None, c=''):
+        self.freq = x
+        self.key = k
+        self.left = l
+        self.right = r
+        self.code = c
 
-    Сложность: !!!.
-    """
-    for j in range(len(lst_obj)):          # !!!
-        if lst_obj[j] in lst_obj[j+1:]:    # !!!
-            return False                   # !!!
-    return True                            # !!!
+    def __lt__(self, otr):
+        return self.freq < otr.freq
 
 
-#############################################################################################
-def check_3(lst_obj):
-    """Функция должная вернуть True, если все элементы списка различаются.
+def huffman_code(data):
+    freqTable = {}
+    nodeList = []
+    que = queue.PriorityQueue()
+    codeTable = {}
 
-    Алгоритм 2:
-    Вначале выполним для списка сортировку, далее, сравниваем элементы попарно
-    Если присутствуют дубли, они будут находиться рядом.
+    # frequent label init
+    for n in data:
+        if n in freqTable:
+            freqTable[n] += 1
+        else:
+            freqTable[n] = 1
 
-    Сложность: !!!
-    """
-    lst_copy = list(lst_obj)                 # !!!
-    lst_copy.sort()                          # !!!
-    for i in range(len(lst_obj) - 1):        # !!!
-        if lst_copy[i] == lst_copy[i+1]:     # !!!
-            return False                     # !!!
-    return True                              # !!!
+    # Huffman tree init
+    for k, v in freqTable.items():
+        nodeList.append(Node(v, k))
+        que.put(nodeList[-1])
 
-#############################################################################################
+    # Huffman tree generate
+    while que.qsize() > 1:
+        n1 = que.get()
+        n2 = que.get()
+        n1.code = '1'
+        n2.code = '0'
+        nn = Node(n1.freq + n2.freq, l=n1, r=n2)
+        nodeList.append(nn)
+        que.put(nodeList[-1])
+
+    # get Huffman code
+    def bl(p, codestr=[]):
+        codestr.append(p.code)
+        if p.left:
+            bl(p.left, codestr.copy())
+            bl(p.right, codestr.copy())
+        else:
+            codeTable[p.key] = ''.join(codestr)
+
+    bl(nodeList[-1])
+
+    # print Huffman code result
+    print(str(codeTable))
+
+    return codeTable
 
 
-for j in (50, 500, 1000, 5000, 10000):
-    # Из 100000 чисел возьмем 'j' случайно выбранных
-    # Всего 10 тыс. чисел
-    lst = random.sample(range(-100000, 100000), j)
-
-print(check_1(lst))
-print(check_2(lst))
-print(check_3(lst))
+if __name__ == '__main__':
+    data = (input('В веди число: '))
+    user_code = [char for char in data]
+    huffman_code(user_code)
